@@ -1,0 +1,25 @@
+﻿<div class="row justify-content-center">
+    <div class="col-12 text-center">
+        <h2>Список заказов</h2>
+    </div>
+</div>
+@if(Orders.Any())
+{
+    <div class="row justify-content-center">
+   
+        @foreach (var order in Orders)
+        {
+            <OrderCard Order="order"/>
+        }
+    </div>
+}
+else
+{
+    <div class="row justify-content-center">
+        <h3 class="alert-info col-12 text-center">Список заказов пуст</h3>
+    </div>
+}
+
+@code {
+    [Parameter] public List<Order>? Orders { get; set; }
+}

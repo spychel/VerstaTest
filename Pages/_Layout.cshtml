@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title> @ViewBag.Title</title>
+    <link href="/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/css/styles.css" rel="stylesheet" />
+    <link href="_content/Blazored.Modal/blazored-modal.css" rel="stylesheet" />
+    <script src="_content/Blazored.Modal/blazored.modal.js"></script>  
+    <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" /> 
+    <base href="~/" />
+</head>
+<body>
+    @RenderBody()
+    <script src="_framework/blazor.server.js"></script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+﻿<EditForm Model="@currentOrder" OnValidSubmit="ValidSubmitHandler">
+    <DataAnnotationsValidator />
+    <div class="form-group row mb-3 mt-3 ">
+        <label class="col-sm-4 col-form-label" for="senderCity">Город отправителя:</label>
+        <div class="col-sm-8">
+            <InputText class="form-control" id="senderCity" placeholder="Город отправителя"
+                @bind-Value="@currentOrder.SenderCity" />
+            <ValidationMessage For="() => currentOrder.SenderCity" />
+        </div>
+    </div>
+    <div class="form-group row mb-3">
+        <label class="col-sm-4 col-form-label" for="senderAddress" title="Адрес отправителя">Адрес отправителя:</label>
+        <div class="col-sm-8">
+            <InputText class="form-control" id="senderAddress" placeholder="Адрес отправителя"
+                @bind-Value="@currentOrder.SenderAddress" />
+            <ValidationMessage For="() => currentOrder.SenderAddress" />
+        </div>
+    </div>
+    <div class="form-group row mb-3">
+        <label class="col-sm-4 col-form-label" for="receiverCity" title="Город получателя">Город получателя:</label>
+        <div class="col-sm-8">
+            <InputText class="form-control" id="receiverCity" placeholder="Город получателя"
+                @bind-Value="@currentOrder.ReceiverCity" />
+            <ValidationMessage For="() => currentOrder.ReceiverCity" />
+        </div>
+    </div>
+    <div class="form-group row mb-3">
+        <label class="col-sm-4 col-form-label" for="receiverAddress" title="Адрес получателя">Адрес получателя:</label>
+        <div class="col-sm-8">
+            <InputText class="form-control" id="receiverAddress" placeholder="Адрес получателя"
+                @bind-Value="@currentOrder.ReceiverAddress" />
+            <ValidationMessage For="() => currentOrder.ReceiverAddress" />
+        </div>
+    </div>
+    <div class="form-group row mb-3">
+        <label class="col-sm-4 col-form-label" for="cargoWeight" title="Вес груза">Вес груза:</label>
+        <div class="col-sm-8">
+            <InputNumber class="form-control" id="cargoWeight" placeholder="Вес груза"
+                @bind-Value="@currentOrder.CargoWeight" />
+            <ValidationMessage For="() => currentOrder.CargoWeight" />
+        </div>
+    </div>
+    <div class="form-group row mb-3">
+        <label class="col-sm-4 col-form-label" for="pickupDate" title="Дата забора груза">Дата забора груза:</label>
+        <div class="col-sm-8">
+            <InputDate class="form-control" id="pickupDate" placeholder="Дата забора груза"
+                @bind-Value="@currentOrder.PickupDate" />
+            <ValidationMessage For="() => currentOrder.PickupDate" />
+        </div>
+    </div>
+    <div class="form-group row justify-content-center mt-4">
+        <div class="col-sm-4">
+            <button class="btn btn-primary" type="submit">Создать заказ</button>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Inject] OrderContext? OrderContext { get; set; }
+
+    [Parameter] public EventCallback OnCreateNewOrder { get; set; }
+
+    Order? currentOrder;
+
+    void CleanFields()
+    {
+        currentOrder!.SenderCity = string.Empty;
+        currentOrder!.SenderAddress = string.Empty;
+        currentOrder!.ReceiverCity = string.Empty;
+        currentOrder!.ReceiverAddress = string.Empty;
+        currentOrder!.CargoWeight = 0f;
+        currentOrder!.PickupDate = DateOnly.FromDateTime(DateTime.Now);
+    }
+
+    protected override void OnInitialized()
+    {
+        currentOrder = new Order();
+    }
+
+    async void ValidSubmitHandler()
+    {
+        currentOrder!.Id = Guid.NewGuid();
+
+        string postfix = shortid.ShortId.Generate(new shortid.Configuration.GenerationOptions(true, false, 8));
+        currentOrder!.OrderNumber = DateOnly.FromDateTime(DateTime.Now).ToString("dd.MM.yyyy") + "/" + postfix;
+
+        await OrderContext!.Orders.AddAsync(currentOrder);
+        await OrderContext!.SaveChangesAsync();
+        CleanFields();
+        await OnCreateNewOrder.InvokeAsync();
+    }
+}
